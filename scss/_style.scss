@@ -23,9 +23,16 @@ body{
         background-color: white;
         margin: 0 20%;
 
-        span{
+        i{
             color: $lighterGrey;
             font-size: $font-s;
+
+        }
+
+        div{
+            color: $lighterGrey;
+            font-size: $font-s;
+            display: inline-block;
 
         }
 
@@ -57,6 +64,11 @@ body{
             margin-left:0;
             width: 80%;
         }
+    }
+    .checkList{
+        text-decoration: line-through;
+        color: $lighterGrey;
+
     }
 
 }

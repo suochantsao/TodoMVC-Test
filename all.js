@@ -3,11 +3,13 @@ const completeBtn   = document.getElementById('completeTodo');
 const inputBlock    = document.getElementById('inputPress');
 const activeBtn     = document.getElementById('activeTodo');
 const selAllBtn     = document.getElementById('selectAll');
+const newSelAll     = document.getElementById('newSelectAll')
 const delAllBtn     = document.getElementById('clearAll');
 const allBtn        = document.getElementById('allTodo');
 const listLength    = document.querySelector('.itemNum');
 const insertBlock   = document.querySelector('.activeList'); 
 const completeBlock = document.querySelector('.completeList'); 
+const chevronBlock  = document.querySelector('.chevronIcon');
 
 // 宣告各個陣列
 let todoAry       = [];
@@ -112,13 +114,13 @@ function completeSingle(e){
     console.log(`選到第${presentIdx}個todo`);
 
     // 新增該筆物件到completeAry
-    let doneTodo   = { 
-        completeItems:'' 
+    let todo   = { 
+        items:'' 
     }
     let value      = activeAry[currentIdx].items;
 
-    doneTodo.completeItems = value;
-    completeAry.push(doneTodo)
+    todo.items = value;
+    completeAry.push(todo)
 
     
     // 使用splice將該筆資料從activeAry中移除
@@ -153,7 +155,7 @@ function cancleSingle(e){
     let todo   = { 
         items:'' 
     }
-    let value  = completeAry[currentIdx].completeItems;
+    let value  = completeAry[currentIdx].items;
 
     todo.items = value;
     activeAry.push(todo);
@@ -173,30 +175,48 @@ completeBlock.addEventListener('click',cancleSingle)
 // ,.♫_____________________♪____________________♫,. //
 // * 點擊向下icon選取全部todo
 function selAllTodo(e){
-    // 測試
-    console.log(e);
 
     if(e.target.nodeName !== 'I'){
         return
     }else if(e.target.className !== "fas fa-chevron-down"){
         return
     }
-    
-    let strOfItem = '';
+    console.log(e);
+    let listLength = activeAry.length;
+    completeAry    = activeAry.slice(0,listLength);
+    activeAry      = [];
 
-    activeAry.forEach((item,index) => {
-        strOfItem += `<div class="listText listStyle">
-        <span><i class="far fa-check-circle" data-allcomplete=${index}></i></span>
-        <input type="text" value="${item.items}">
-        <span><i class="fas fa-times" data-delindex=${index}></i></span>
-      </div>`;
-    })
+    activeRender()
+    completeRender()
+    circleRender()
 
-    insertBlock.innerHTML = strOfItem;
 }
 
 // 綁定向下icon的eventListener
 selAllBtn.addEventListener('click',selAllTodo)
+
+// ,.♫_____________________♪____________________♫,. //
+// todo 點擊圓形向下icon取消選取全部todo
+function cancleSelAll(e){
+    
+    if(e.target.nodeName !== 'I'){
+        return
+    }else if(e.target.className !== "fas fa-chevron-circle-down"){
+        return
+    }
+
+    let listLength = activeAry.length;
+    activeAry    = completeAry.slice(0,listLength);
+    completeAry      = [];
+
+    origRender()
+    activeRender()
+    completeRender()
+
+}
+
+// 綁定向下icon的eventListener
+selAllBtn.addEventListener('click',cancleSelAll)
 
 // ,.♫_____________________♪____________________♫,. //
 // *修改todo的function
@@ -241,7 +261,7 @@ function completeRender(){
     completeAry.forEach((item,index) => {
         strOfItem += `<div class="listText listStyle">
         <span><i class="far fa-check-circle" data-completeindex=${index}></i></span>
-        <input type="text" value="${item.completeItems}" data-editindex=${index}>
+        <input class="checkList" type="text" value="${item.items}" data-editindex=${index}>
         <span><i class="fas fa-times" data-delindex=${index}></i></span>
       </div>`;
     })
@@ -283,10 +303,25 @@ function completeTodoList(){
 completeBtn.addEventListener('click',completeTodoList)
 
 // ,.♫_____________________♪____________________♫,. //
+// * 點擊向下icon後render成新的圓形icon
+function circleRender(){
+    let strOfItem          = `<i class="fas fa-chevron-circle-down" id="newSelectAll"></i>`;  
+    chevronBlock.innerHTML = strOfItem;
+
+}
+
+function origRender(){
+    let strOfItem          = `<i class="fas fa-chevron-down" id="selectAll"></i>`;  
+    chevronBlock.innerHTML = strOfItem;
+
+}
+
+// ,.♫_____________________♪____________________♫,. //
 // * 點擊Clear complete刪除全部完成的todo
 function delAllComplete(){
     completeAry = [];
     completeRender()
+    origRender()
 }
 
 // 綁定Clear complete按鈕的eventListener
