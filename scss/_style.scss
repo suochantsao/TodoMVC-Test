@@ -1,0 +1,90 @@
+body{
+    max-width: 960px;
+    margin: 5% auto;
+    text-align: center;
+    background-color: $lightGrey;
+
+    h1{
+        color: $lightPink;
+        font-size: $font-l;
+        font-weight: lighter;
+    }
+}
+.container{
+    margin-top: 2%;
+
+    i:hover{
+        color: grey;
+        cursor: pointer;
+    }
+    
+    .listStyle{
+        // border: 1px black solid;
+        background-color: white;
+        margin: 0 20%;
+
+        span{
+            color: $lighterGrey;
+            font-size: $font-s;
+
+        }
+
+        input{
+            width: 85%;
+            height: 75px;
+            margin-left: 3%;
+            font-size: $font-m;
+            border-style: none;
+            outline: none;
+     
+        }
+        ::placeholder{
+            color: $lighterGrey;
+            font-style: italic;
+            font-weight: 100;
+
+        }
+    }
+
+    .listText{
+        border-top: 2px solid $lighterGrey;
+        margin: 0 20%;
+
+        span{
+            margin: 2%;
+        }
+        input{
+            margin-left:0;
+            width: 80%;
+        }
+    }
+
+}
+
+footer{
+    // border: 1px solid black;
+    display: flex;
+    margin: 2% 18% 2% 21%;
+    color: $lighterGrey;
+
+    .listNum{
+        text-align: left;
+        margin-right: 17%;
+    }
+    .unPick{
+        display: inline-block;
+        margin: 0 1%;
+        padding: 0 1%;
+
+    }
+
+    .pickList{
+        border: 1px solid $lightPink;
+        border-radius: 3px;
+    }
+    span:hover{
+        color: grey;
+        cursor: pointer;
+    }
+}
+

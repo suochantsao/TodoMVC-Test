@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.css'/>
+    <link rel="stylesheet" href="/css/all.min.css">
+    <title>TodoMVC</title>
+  </head>
+  <body>
+    
+    <!-- 大標題todos -->
+    <header>
+        <h1>todos</h1>
+    </header>
+
+    <!-- 填寫todolist的區塊 -->
+    <div class="container">
+
+        <!-- 輸入代辦項目的區塊（包含選取全部項目的下拉式icon和input區塊) -->
+        <div class="inputLine listStyle">
+
+            <!-- 選取全部todo的icon -->
+            <span><i class="fas fa-chevron-down" id="selectAll"></i></span>
+
+            <!-- 輸入項目的區塊 -->
+            <!-- ?事件要綁定點擊enter之後新增代辦事項 -->
+            <input type="text" placeholder="What needs to be done?" value="" id="inputPress">
+
+        </div>
+
+        <div class="completeList"></div>
+        <div class="activeList"></div>
+
+    </div>
+
+    <!-- 操作和修改提示 -->
+    <footer>
+      
+      <div class="listNum">
+        <!-- 計算目前todolist的數量 -->
+        <span class="itemNum">0</span> items left
+
+      </div>
+
+        <span class="unPick" id="allTodo">All</span>
+        <span class="unPick" id="activeTodo">Active</span>
+        <span class="unPick" id="completeTodo">Completed</span>
+        <span class="unPick" id="clearAll" >Clear completed</span>
+      
+
+    </footer>
+    
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/10.13.0/sweetalert2.all.js'></script>
+    <script src="/all.js"></script>
+  </body>
+</html>
