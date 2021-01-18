@@ -1,241 +1,214 @@
-// DOM綁定
-const completeBtn   = document.getElementById('completeTodo');
+// DOM
 const inputBlock    = document.getElementById('inputPress');
-const activeBtn     = document.getElementById('activeTodo');
-const selAllBtn     = document.getElementById('selectAll');
-const newSelAll     = document.getElementById('newSelectAll')
-const delAllBtn     = document.getElementById('clearAll');
-const allBtn        = document.getElementById('allTodo');
+const activeBlock   = document.querySelector('.activeList');
+const completeBlock = document.querySelector('.completeList');
 const listLength    = document.querySelector('.itemNum');
-const insertBlock   = document.querySelector('.activeList'); 
-const completeBlock = document.querySelector('.completeList'); 
+
+// Button DOM
+const selAllBtn     = document.getElementById('selectAll');
+const allBtn        = document.getElementById('allTodo');
+const activeBtn     = document.getElementById('activeTodo');
+const completeBtn   = document.getElementById('completeTodo');
+const delAllBtn     = document.getElementById('clearAll');
 const chevronBlock  = document.querySelector('.chevronIcon');
 
-// 宣告各個陣列
-let todoAry       = [];
-let activeAry     = [];
-let completeAry   = [];
+// API
+const url = "https://guarded-hamlet-24255.herokuapp.com/todo3";
+
+// Array Declared
+let activeAry   = [];
+let completeAry = [];
 
 // ,.♫_____________________♪____________________♫,. //
-// *新增todolist function
-function addTodoItems(){
-    let todo = {
-        items:''
-    }
+// * Get database
 
-    // 宣告item的值等於我們輸入input區塊的值
-    todo.items = inputBlock.value;
 
-    // 防呆和post資料上去
-    if(inputBlock.value.trim() === '' ){
-        Swal.fire('請先輸入待辦事項');
-    }else{
-        todoAry.push(todo);
-        activeAry.push(todo);
-    }
+// * Add New Todo
+function addTodoItems(e){
+    if (e.key === 'Enter'){
+
+        let todo = {
+            items:''
+        }
     
-    // 清空原本輸入的資料方便下一次輸入新的todo
-    inputBlock.value = '';
-    // 將新增成功的話面render出來
-    activeRender()
+        todo.items = inputBlock.value;
+    
+        if(inputBlock.value.trim() === '' ){
+            Swal.fire(`請先輸入待辦事項`);
+        }else{
+            activeAry.push(todo);
+        }
+    
+        // console.log(`新增${inputBlock.value}`);
+        inputBlock.value = '';
+        activeRender()
 
+    }
 }
+// EventListener
+inputBlock.addEventListener('keypress',addTodoItems);
 
-// 按下enter鍵後執行function
-function pressEnter(e){
-    if(e.key === 'Enter')
-    addTodoItems()
-}
 
-// 綁定新增todo的eventListener
-inputBlock.addEventListener('keypress',pressEnter)
+// * Delete Todo
+function delSingleTodo(e){
 
-// ,.♫_____________________♪____________________♫,. //
-// *刪除指定的todo
-function delSingle(e){
-    if(e.target.nodeName !== 'I'){
+    if (e.target.nodeName !== 'I'){
         return
-    }else if(e.target.className !== "fas fa-times"){
+    }else if (e.target.className !== "fas fa-times"){
         return
+    }else if (e.path[3].className === "activeList"){
+        let currentIndex = e.target.dataset.delindex;
+        activeAry.splice(currentIndex,1);
+    
+        activeRender()
+
+    }else if (e.path[3].className === "completeList"){
+
+        let currentIndex = e.target.dataset.completeindex;
+        completeAry.splice(currentIndex,1);
+    
+        completeRender()
     }
 
-    // 抓取所指定的todo順序
-    let currentIdx = e.target.dataset.delindex;
-
-    // 使用splice將該筆資料從todoAry中移除
-    todoAry.splice(currentIdx,1)
-    activeAry.splice(currentIdx,1)
-
-    activeRender()
-
 }
+// Event Listener
+activeBlock.addEventListener('click',delSingleTodo)
+completeBlock.addEventListener('click',delSingleTodo)
 
-// 綁定刪除單一todo的eventListener
-insertBlock.addEventListener('click',delSingle)
 
-// ,.♫_____________________♪____________________♫,. //
-// *刪除指定的complete todo
-function delcompleteSingle(e){
-    if(e.target.nodeName !== 'I'){
-        return
-    }else if(e.target.className !== "fas fa-times"){
-        return
-    }
-
-    // 抓取所指定的todo順序
-    let currentIdx = e.target.dataset.completeindex;
-
-    // 使用splice將該筆資料從todoAry中移除
-    todoAry.splice(currentIdx,1)
-    completeAry.splice(currentIdx,1)
-
-    completeRender()
-
-}
-
-// 綁定刪除單一todo的eventListener
-completeBlock.addEventListener('click',delcompleteSingle)
-
-// ,.♫_____________________♪____________________♫,. //
-// * 完成指定的todo
+// * Complete the Todo
 function completeSingle(e){
 
-    if(e.target.nodeName !== 'I'){
+    if (e.target.nodeName !== 'I'){
         return
     }
-    else if(e.target.className !== "far fa-circle"){
-        return
+    else if (e.target.className === "far fa-circle"){
+
+        let currentIndex = e.target.dataset.completeindex;
+        let todo = {
+            items:''
+        }
+        let value  = activeAry[currentIndex].items;
+        todo.items = value;
+        completeAry.push(todo);
+
+        activeAry.splice(currentIndex,1);
     }
-    // 抓取所指定的todo順序
-    let currentIdx = e.target.dataset.completeindex;
+    else if (e.target.className === "far fa-check-circle"){
 
-    // 測試
-    let presentIdx = parseInt(currentIdx)+1
-    console.log(`選到第${presentIdx}個todo`);
+        let currentIndex = e.target.dataset.completeindex;
+        let todo = {
+            items:''
+        }
+        let value  = completeAry[currentIndex].items;
+        todo.items = value;
+        activeAry.push(todo);
 
-    // 新增該筆物件到completeAry
-    let todo   = { 
-        items:'' 
+        completeAry.splice(currentIndex,1);
     }
-    let value      = activeAry[currentIdx].items;
-
-    todo.items = value;
-    completeAry.push(todo)
-
-    
-    // 使用splice將該筆資料從activeAry中移除
-    activeAry.splice(currentIdx,1);
-    
-    activeRender();
-    completeRender();
-
-}
-
-// 綁定完成單一todo的eventListener
-insertBlock.addEventListener('click',completeSingle)
-
-// ,.♫_____________________♪____________________♫,. //
-// * 取消指定的todo
-function cancleSingle(e){
-
-    if(e.target.nodeName !== 'I'){
-        return
-    }
-    else if(e.target.className !== "far fa-check-circle"){
-        return
-    }
-    // 抓取所指定的todo順序
-    let currentIdx = e.target.dataset.completeindex;
-
-    // 測試
-    let presentIdx = parseInt(currentIdx)+1
-    console.log(`取消第${presentIdx}個todo`);
-
-    // 新增該筆物件到activeAry
-    let todo   = { 
-        items:'' 
-    }
-    let value  = completeAry[currentIdx].items;
-
-    todo.items = value;
-    activeAry.push(todo);
-
-    
-    // 使用splice將該筆資料從completeAry中移除
-    completeAry.splice(currentIdx,1);
-    
     activeRender()
     completeRender()
 
 }
+// Event Listener
+activeBlock.addEventListener('click',completeSingle)
+completeBlock.addEventListener('click',completeSingle)
 
-// 綁定取消單一todo的eventListener
-completeBlock.addEventListener('click',cancleSingle)
 
-// ,.♫_____________________♪____________________♫,. //
-// * 點擊向下icon選取全部todo
+// * Select All ActiveTodo
 function selAllTodo(e){
-
-    if(e.target.nodeName !== 'I'){
-        return
-    }else if(e.target.className !== "fas fa-chevron-down"){
-        return
-    }
     console.log(e);
-    let listLength = activeAry.length;
-    completeAry    = activeAry.slice(0,listLength);
-    activeAry      = [];
 
-    activeRender()
-    completeRender()
-    circleRender()
-
-}
-
-// 綁定向下icon的eventListener
-selAllBtn.addEventListener('click',selAllTodo)
-
-// ,.♫_____________________♪____________________♫,. //
-// todo 點擊圓形向下icon取消選取全部todo
-function cancleSelAll(e){
-    
-    if(e.target.nodeName !== 'I'){
-        return
-    }else if(e.target.className !== "fas fa-chevron-circle-down"){
+    if (e.target.nodeName !== 'I'){
         return
     }
+    else if (e.target.className === "fas fa-chevron-down"){
 
-    let listLength = activeAry.length;
-    activeAry    = completeAry.slice(0,listLength);
-    completeAry      = [];
+        let listLength = activeAry.length;
+        completeAry    = activeAry.slice(0,listLength);
+        activeAry      = [];
 
-    origRender()
+        circleRender()
+
+    }
+    else if (e.target.className === "fas fa-chevron-circle-down"){
+
+        let listLength = completeAry.length;
+        activeAry      = completeAry.slice(0,listLength);
+        completeAry    = [];
+
+        orgRender()
+
+    }
     activeRender()
     completeRender()
 
 }
+// Event Listener
+chevronBlock.addEventListener('click',selAllTodo)
 
-// 綁定向下icon的eventListener
-selAllBtn.addEventListener('click',cancleSelAll)
 
-// ,.♫_____________________♪____________________♫,. //
-// *修改todo的function
-function editTodo(e){
+// * Edit Todo
+function editTodo(e) {
+
     if(e.target.nodeName !== 'INPUT'){
         return
     }
+    else if(e.path[2].className === "activeList"){
+        let currentIdx = e.target.dataset.editindex;
+        activeAry[currentIdx].items = e.target.value;
+    }
+    else if(e.path[2].className === "completeList"){
+        let currentIdx = e.target.dataset.editindex;
+        completeAry[currentIdx].items = e.target.value;
+    }
 
-    // 抓取所指定的todo順序
-    let currentIdx = e.target.dataset.editindex;
-    // 將該筆資料的物件值更新為新的value
-    todoAry[currentIdx].items = e.target.value;
 
 }
-// 綁定修改完後點擊enter的eventListener
-insertBlock.addEventListener('keypress',editTodo)
+// Event Listener
+activeBlock.addEventListener('keypress',editTodo)
+completeBlock.addEventListener('keypree',editTodo)
+
+
+// * Delete All SelectedTodos
+function delAllComplete(){
+    completeAry = [];
+    completeRender()
+    orgRender()
+}
+// Event Listener
+delAllBtn.addEventListener('click',delAllComplete)
+
+
+// * Render All Todos
+function allList(){
+    activeRender()
+    completeRender()
+}
+// Event Listener
+allBtn.addEventListener('click',allList)
+
+
+// * Render Active Todos
+function activeTodoList(){
+    completeBlock.innerHTML = '';
+    activeRender()
+}
+// Event Listener
+activeBtn.addEventListener('click',activeTodoList)
+
+
+// * Render Complete Todos
+function completeTodoList(){
+    activeBlock.innerHTML = '';
+    completeRender()
+}
+// Event Listener
+completeBtn.addEventListener('click',completeTodoList)
+
 
 // ,.♫_____________________♪____________________♫,. //
-// * 將active的todo render出來的function
+// * Render ActiveTodo
 function activeRender(){
     let strOfItem = '';
 
@@ -247,14 +220,11 @@ function activeRender(){
       </div>`;
     })
     
-    // 更新todo的數量
     listLength.textContent = `${activeAry.length}`
-    // 將新增的string插入綁定的DOM
-    insertBlock.innerHTML = strOfItem;
+    activeBlock.innerHTML = strOfItem;
 }
 
-// ,.♫_____________________♪____________________♫,. //
-// * 將complete的todo render出來的function
+// * Render completeTodo
 function completeRender(){
     let strOfItem = '';
 
@@ -266,71 +236,19 @@ function completeRender(){
       </div>`;
     })
     
-    // 更新todo的數量
     listLength.textContent = `${activeAry.length}`
-    // 將新增的string插入綁定的DOM
     completeBlock.innerHTML = strOfItem;
 }
 
-// ,.♫_____________________♪____________________♫,. //
-// * 點擊All顯示全部的todo
-function allList(){
-    activeRender()
-    completeRender()
-}
-
-// 綁定All按鈕的eventListener
-allBtn.addEventListener('click',allList)
-
-// ,.♫_____________________♪____________________♫,. //
-// * 點擊Active顯示全部active todo
-function activeTodoList(){
-    completeBlock.innerHTML = '';
-    activeRender()
-}
-
-// 綁定Active按鈕的eventListener
-activeBtn.addEventListener('click',activeTodoList)
-
-// ,.♫_____________________♪____________________♫,. //
-// * 點擊Complete顯示全部的todo
-function completeTodoList(){
-    insertBlock.innerHTML = '';
-    completeRender()
-}
-
-// 綁定Complete按鈕的eventListener
-completeBtn.addEventListener('click',completeTodoList)
-
-// ,.♫_____________________♪____________________♫,. //
-// * 點擊向下icon後render成新的圓形icon
+// * Chevron Render
 function circleRender(){
     let strOfItem          = `<i class="fas fa-chevron-circle-down" id="newSelectAll"></i>`;  
     chevronBlock.innerHTML = strOfItem;
 
 }
 
-function origRender(){
+function orgRender(){
     let strOfItem          = `<i class="fas fa-chevron-down" id="selectAll"></i>`;  
     chevronBlock.innerHTML = strOfItem;
 
 }
-
-// ,.♫_____________________♪____________________♫,. //
-// * 點擊Clear complete刪除全部完成的todo
-function delAllComplete(){
-    completeAry = [];
-    completeRender()
-    origRender()
-}
-
-// 綁定Clear complete按鈕的eventListener
-delAllBtn.addEventListener('click',delAllComplete)
-
-// ,.♫_____________________♪____________________♫,. //
-// *檢查用eventListener
-inputBlock.addEventListener('keypress',(e) => {
-    if(e.key === 'Enter')
-    console.log('enter成功！')
-})
-
