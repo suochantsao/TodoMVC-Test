@@ -21,9 +21,18 @@ let completeAry = [];
 
 // ,.♫_____________________♪____________________♫,. //
 // * Get database
+// ? axios GET
+axios
+  .get(url)
+  .then(res => {
 
+    activeAry = res.data;
+    activeRender();
+
+  });
 
 // * Add New Todo
+// ? axios POST
 function addTodoItems(e){
     if (e.key === 'Enter'){
 
@@ -36,12 +45,19 @@ function addTodoItems(e){
         if(inputBlock.value.trim() === '' ){
             Swal.fire(`請先輸入待辦事項`);
         }else{
-            activeAry.push(todo);
+            axios
+              .post(url,{
+                  items:inputBlock.value
+              })
+              .then( res => {
+                activeAry.push(res.data);
+                activeRender()
+                
+              });
+
         }
     
-        // console.log(`新增${inputBlock.value}`);
         inputBlock.value = '';
-        activeRender()
 
     }
 }
@@ -50,6 +66,7 @@ inputBlock.addEventListener('keypress',addTodoItems);
 
 
 // * Delete Todo
+// todo 使用axios刪除指定todo
 function delSingleTodo(e){
 
     if (e.target.nodeName !== 'I'){
@@ -57,16 +74,36 @@ function delSingleTodo(e){
     }else if (e.target.className !== "fas fa-times"){
         return
     }else if (e.path[3].className === "activeList"){
+
         let currentIndex = e.target.dataset.delindex;
+        console.log(currentIndex);
+
+        axios
+          .delete(`${url}/${currentIndex}`)
+          .then(res => {
+
+            axios
+            .get(url)
+            .then(res => {
+          
+              activeAry = res.data;
+              activeRender();
+          
+            });
+
+          })
+
         activeAry.splice(currentIndex,1);
-    
-        activeRender()
 
     }else if (e.path[3].className === "completeList"){
 
         let currentIndex = e.target.dataset.completeindex;
+
+        axios
+          .delete(`${url}`)
+          .then(res => console.log(res))
+
         completeAry.splice(currentIndex,1);
-    
         completeRender()
     }
 
@@ -214,14 +251,14 @@ function activeRender(){
 
     activeAry.forEach((item,index) => {
         strOfItem += `<div class="listText listStyle">
-        <span><i class="far fa-circle" data-completeindex=${index}></i></span>
+        <span><i class="far fa-circle" data-completeindex=${item.id}></i></span>
         <input type="text" value="${item.items}" data-editindex=${index}>
-        <span><i class="fas fa-times" data-delindex=${index}></i></span>
+        <span><i class="fas fa-times" data-delindex=${item.id}></i></span>
       </div>`;
-    })
+    });
     
-    listLength.textContent = `${activeAry.length}`
-    activeBlock.innerHTML = strOfItem;
+    listLength.textContent = `${activeAry.length}`;
+    activeBlock.innerHTML = strOfItem;;
 }
 
 // * Render completeTodo
@@ -230,9 +267,9 @@ function completeRender(){
 
     completeAry.forEach((item,index) => {
         strOfItem += `<div class="listText listStyle">
-        <span><i class="far fa-check-circle" data-completeindex=${index}></i></span>
+        <span><i class="far fa-check-circle" data-completeindex=${item.id}></i></span>
         <input class="checkList" type="text" value="${item.items}" data-editindex=${index}>
-        <span><i class="fas fa-times" data-delindex=${index}></i></span>
+        <span><i class="fas fa-times" data-delindex=${item.id}></i></span>
       </div>`;
     })
     
