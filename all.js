@@ -66,7 +66,7 @@ inputBlock.addEventListener('keypress',addTodoItems);
 
 
 // * Delete Todo
-// todo 使用axios刪除指定todo
+// todo axios DELETE
 function delSingleTodo(e){
 
     if (e.target.nodeName !== 'I'){
@@ -121,10 +121,14 @@ function completeSingle(e){
     }
     else if (e.target.className === "far fa-circle"){
 
-        let currentIndex = e.target.dataset.completeindex;
+        let currentIndex = parseInt(e.target.dataset.completeindex)-1;
         let todo = {
             items:''
         }
+
+        console.log(activeAry);
+        console.log(currentIndex);
+
         let value  = activeAry[currentIndex].items;
         todo.items = value;
         completeAry.push(todo);
@@ -133,10 +137,14 @@ function completeSingle(e){
     }
     else if (e.target.className === "far fa-check-circle"){
 
-        let currentIndex = e.target.dataset.completeindex;
+        let currentIndex = e.target.dataset;
         let todo = {
             items:''
         }
+        console.log(activeAry);
+        console.log(completeAry);
+        console.log(currentIndex);
+
         let value  = completeAry[currentIndex].items;
         todo.items = value;
         activeAry.push(todo);
